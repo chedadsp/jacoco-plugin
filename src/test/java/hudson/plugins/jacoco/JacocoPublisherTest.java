@@ -5,6 +5,8 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.*;
 import hudson.plugins.jacoco.JacocoPublisher.DescriptorImpl;
+import hudson.plugins.jacoco.group.GroupPackagesConfig;
+
 import org.easymock.IAnswer;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,7 +81,7 @@ public class JacocoPublisherTest extends AbstractJacocoTestBase {
     @SuppressWarnings("deprecation")
 	@Test
 	public void testConstruct() {
-		JacocoPublisher publisher = new JacocoPublisher(null, null, null, null, null, false,
+		JacocoPublisher publisher = new JacocoPublisher(null, null, null, null, null, null, false,
 				null, null, null, null,
 				null, null, null, null,
 				null, null, null, null,
@@ -494,7 +496,7 @@ public class JacocoPublisherTest extends AbstractJacocoTestBase {
 		PowerMock.replay(taskListener, run, job);
 
 		// execute
-		JacocoPublisher publisher = new JacocoPublisher("**/**.exec", "**/classes", "**/src/main/java", "", "", false, "0", "0"
+		JacocoPublisher publisher = new JacocoPublisher(new GroupPackagesConfig(true, null), "**/**.exec", "**/classes", "**/src/main/java", "", "", false, "0", "0"
 				, "0", "0", "0", "0", "0", "0"
 				, "0", "0", "0", "0", false,
 				"10.564", "5.65", "9.995", "11.4529", "9.346", "5.237", true);

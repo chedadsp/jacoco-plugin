@@ -181,5 +181,38 @@
     	</tbody>
     </table>
   </f:entry>
-
+  
+  
+	<f:optionalBlock field="groupPackagesConfig" title="Group packages" checked="${instance.groupPackagesConfig.groups!=null}">
+		<f:entry field="showMismatched">
+			<f:checkbox checked="${instance.groupPackagesConfig.showMismatched}" title="Show mismatched"/>
+		</f:entry>
+		<f:entry field="groups" title="Groups">
+			<f:repeatable field="groups" add="Add Group">
+		        <table width="100%">
+					<br/>
+					<f:entry field="name" title="Group name">
+						<f:textbox/>
+					</f:entry>
+					<f:entry field="prefixes">
+			          	<f:repeatable field="prefixes" add="Add Prefix">
+			          		<table width="100%">
+								<br/>
+								<f:entry title="Package prefix" field="value">
+									<f:textbox/>
+								</f:entry>
+			        		</table>
+			        		<div align="right">
+					          <input type="button" value="Delete Prefix" class="repeatable-delete" style="margin-left: 1em;" />
+					        </div>
+			          	</f:repeatable>
+					</f:entry>
+		        </table>
+		        <div align="right">
+		          <input type="button" value="Delete Group" class="repeatable-delete" style="margin-left: 1em;" />
+		        </div>
+			</f:repeatable>
+		</f:entry>
+	</f:optionalBlock>
+	
 </j:jelly>

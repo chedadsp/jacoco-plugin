@@ -36,6 +36,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
 import javax.annotation.Nonnull;
+
+import hudson.plugins.jacoco.group.Group;
+import hudson.plugins.jacoco.group.GroupPackagesConfig;
 import hudson.plugins.jacoco.portlet.bean.JacocoDeltaCoverageResultSummary;
 
 /**
@@ -102,6 +105,7 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
     private String deltaMethodCoverage;
     private String deltaClassCoverage;
     private boolean buildOverBuild;
+    private GroupPackagesConfig groupPackagesConfig;
     
 	private static final String DIR_SEP = "\\s*,\\s*";
 
@@ -109,6 +113,7 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
 
     @DataBoundConstructor
     public JacocoPublisher() {
+    	this.groupPackagesConfig = new GroupPackagesConfig(false, null);
         this.execPattern = "**/**.exec";
         this.classPattern = "**/classes";
         this.sourcePattern = "**/src/main/java";
@@ -141,10 +146,11 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
      * Loads the configuration set by user.
      */
     @Deprecated
-    public JacocoPublisher(String execPattern, String classPattern, String sourcePattern, String inclusionPattern, String exclusionPattern, boolean skipCopyOfSrcFiles, String maximumInstructionCoverage, String maximumBranchCoverage
+    public JacocoPublisher(GroupPackagesConfig groupPackagesConfig, String execPattern, String classPattern, String sourcePattern, String inclusionPattern, String exclusionPattern, boolean skipCopyOfSrcFiles, String maximumInstructionCoverage, String maximumBranchCoverage
     		, String maximumComplexityCoverage, String maximumLineCoverage, String maximumMethodCoverage, String maximumClassCoverage, String minimumInstructionCoverage, String minimumBranchCoverage
     		, String minimumComplexityCoverage, String minimumLineCoverage, String minimumMethodCoverage, String minimumClassCoverage, boolean changeBuildStatus,
                            String deltaInstructionCoverage, String deltaBranchCoverage, String deltaComplexityCoverage, String deltaLineCoverage, String deltaMethodCoverage, String deltaClassCoverage, boolean buildOverBuild) {
+    	this.groupPackagesConfig = groupPackagesConfig;
     	this.execPattern = execPattern;
     	this.classPattern = classPattern;
     	this.sourcePattern = sourcePattern;
@@ -347,6 +353,14 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
     public boolean isBuildOverBuild() {
         return buildOverBuild;
     }
+    
+    public List<Group> getGroups() {
+		return groupPackagesConfig.getGroups();
+	}
+	
+	public GroupPackagesConfig getGroupPackagesConfig() {
+		return groupPackagesConfig;
+	}
 
     @DataBoundSetter
     public void setExecPattern(String execPattern) {
@@ -478,6 +492,11 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
     public void setBuildOverBuild(boolean buildOverBuild) {
         this.buildOverBuild = buildOverBuild;
     }
+    
+    @DataBoundSetter
+	public void setGroupPackagesConfig(GroupPackagesConfig groupPackagesConfig) {
+		this.groupPackagesConfig = groupPackagesConfig;
+	}
 
 	protected static void saveCoverageReports(FilePath destFolder, FilePath sourceFolder) throws IOException, InterruptedException {
 		destFolder.mkdirs();
