@@ -7,7 +7,9 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +26,9 @@ import hudson.model.AbstractBuild;
 import hudson.model.HealthReport;
 import hudson.model.HealthReportingAction;
 import hudson.model.Result;
+import hudson.plugins.jacoco.group.Group;
+import hudson.plugins.jacoco.group.GroupPackagesConfig;
+import hudson.plugins.jacoco.group.PackagePrefix;
 import hudson.plugins.jacoco.model.Coverage;
 import hudson.plugins.jacoco.model.CoverageElement;
 import hudson.plugins.jacoco.model.CoverageElement.Type;
@@ -57,6 +62,7 @@ public final class JacocoBuildAction extends CoverageObject<JacocoBuildAction> i
 	 */
 	private final JacocoHealthReportThresholds thresholds;
 	private transient List<JacocoProjectAction> jacocoProjectActions=Collections.emptyList();
+	private final GroupPackagesConfig groupPackagesConfig;
 
 	/**
 	 * 
@@ -65,9 +71,10 @@ public final class JacocoBuildAction extends CoverageObject<JacocoBuildAction> i
 	 *            the same as an empty map.
 	 * @param thresholds
 	 */
+	
 	public JacocoBuildAction(
 			Map<CoverageElement.Type, Coverage> ratios,
-			JacocoHealthReportThresholds thresholds, TaskListener listener, String[] inclusions, String[] exclusions) {
+			JacocoHealthReportThresholds thresholds, TaskListener listener, String[] inclusions, String[] exclusions, GroupPackagesConfig groupPackagesConfig) {
 		logger = listener.getLogger();
 		if (ratios == null) {
 			ratios = Collections.emptyMap();
@@ -81,6 +88,7 @@ public final class JacocoBuildAction extends CoverageObject<JacocoBuildAction> i
 		this.branch = getOrCreateRatio(ratios, CoverageElement.Type.BRANCH);
 		this.instruction = getOrCreateRatio(ratios, CoverageElement.Type.INSTRUCTION);
 		this.complexity = getOrCreateRatio(ratios, CoverageElement.Type.COMPLEXITY);
+		this.groupPackagesConfig = groupPackagesConfig;
 	}
 
 	private Coverage getOrCreateRatio(Map<CoverageElement.Type, Coverage> ratios, CoverageElement.Type type) {
@@ -296,12 +304,12 @@ public final class JacocoBuildAction extends CoverageObject<JacocoBuildAction> i
 	 * @throws IOException
 	 *      if failed to parse the file.
 	 */
-	public static JacocoBuildAction load(Run<?,?> owner, JacocoHealthReportThresholds thresholds, TaskListener listener, JacocoReportDir layout, String[] includes, String[] excludes) throws IOException {
+	public static JacocoBuildAction load(Run<?,?> owner, JacocoHealthReportThresholds thresholds, TaskListener listener, JacocoReportDir layout, String[] includes, String[] excludes, GroupPackagesConfig groupPackagesConfig) throws IOException {
 		//PrintStream logger = listener.getLogger();
 		Map<CoverageElement.Type,Coverage> ratios = null;
 		
 	    ratios = loadRatios(layout, ratios, includes, excludes);
-		return new JacocoBuildAction(ratios, thresholds, listener, includes, excludes);
+		return new JacocoBuildAction(ratios, thresholds, listener, includes, excludes, groupPackagesConfig);
 	}
 
 
@@ -381,5 +389,28 @@ public final class JacocoBuildAction extends CoverageObject<JacocoBuildAction> i
 	@Override
 	public Collection<? extends Action> getProjectActions() {
 		return jacocoProjectActions;
+	}
+	
+	public List<Group> getGroups() {
+		List<Group> groups = groupPackagesConfig != null ? (groupPackagesConfig.getGroups() != null ? groupPackagesConfig.getGroups(): new LinkedList<Group>()) : new LinkedList<Group>();
+		for (Group group : groups) {
+			if (group.getPrefixes() != null) {
+				sortPackagePrefixes(group.getPrefixes());
+			}
+		}
+		return groups;
+	}
+	
+	private void sortPackagePrefixes(List<PackagePrefix> prefixes) {
+		Collections.sort(prefixes, new Comparator<PackagePrefix> () {
+			@Override
+			public int compare(PackagePrefix o1, PackagePrefix o2) {
+				return ((PackagePrefix) o2).getValue().compareTo(((PackagePrefix) o1).getValue());
+			}
+		});
+	}
+	
+	public boolean showMismatchedPackages() {
+		return groupPackagesConfig != null ? groupPackagesConfig.isShowMismatched() : false;
 	}
 }

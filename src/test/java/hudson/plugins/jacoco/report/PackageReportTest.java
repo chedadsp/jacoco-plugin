@@ -1,6 +1,6 @@
 package hudson.plugins.jacoco.report;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
@@ -45,5 +45,16 @@ public class PackageReportTest {
         report.add(child);
         assertEquals(1, report.getChildren().size());
         assertEquals("testname", report.getChildren().values().iterator().next().getName());
+    }
+    
+    @Test
+    public void testGroupName() {
+    	PackageReport report = new PackageReport();
+    	
+    	assertNull(report.getGroupName());
+    	report.setGroupName("test group name");
+    	assertNotNull(report.getGroupName());
+    	assertEquals("test group name", report.getGroupName());
+    	
     }
 }

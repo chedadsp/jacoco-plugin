@@ -23,7 +23,7 @@ public class AbstractReportTest {
 
         TaskListener taskListener = StreamTaskListener.fromStdout();
 
-        JacocoBuildAction action = new JacocoBuildAction(null, null, taskListener, null, null);
+        JacocoBuildAction action = new JacocoBuildAction(null, null, taskListener, null, null, null);
         report.getParent().getParent().setParent(new CoverageReport(action, null));
         assertNull(report.getBuild());
 

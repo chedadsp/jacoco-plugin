@@ -15,8 +15,15 @@
       <h3>${%Overall Coverage Summary}</h3>
       <e:summaryTable title="${%all classes}"/>
 
-      <h3>${%Coverage Breakdown by Package}</h3>
-      <e:breakdownTable />
+      <j:if test="${!(it.getGroups() != null and  it.getGroups().size() > 0)}"> 
+         <h3>${%Coverage Breakdown by Package}</h3>
+         <e:breakdownTable />
+	  </j:if>
+      
+      <j:if test="${(it.getGroups() != null and  it.getGroups().size() > 0)}">     
+      	<e:groupTables />
+       </j:if>
+ 
     </l:main-panel>
   </l:layout>
 </j:jelly>

@@ -626,7 +626,7 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
             logger.println("[JaCoCo plugin] exclusions: " + Arrays.toString(excludes));
         }
 
-        final JacocoBuildAction action = JacocoBuildAction.load(run, healthReports, taskListener, reportDir, includes, excludes);
+        final JacocoBuildAction action = JacocoBuildAction.load(run, healthReports, taskListener, reportDir, includes, excludes, groupPackagesConfig);
         action.getThresholds().ensureValid();
         logger.println("[JaCoCo plugin] Thresholds: " + action.getThresholds());
         run.addAction(action);

@@ -24,10 +24,13 @@ public class GroupTest {
 	}
 	
 	@Test
-	public void testConstructor() {
+	public void test() {
 		assertEquals("test name", group.getName());
 		assertNotNull(group.getPrefixes());
 		assertEquals(1, group.getPrefixes().size());
+		
+		Group group2 = new Group("test name", null);
+		assertTrue(group.equals(group2));
 	}
 
 }

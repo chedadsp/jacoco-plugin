@@ -128,4 +128,5 @@ public final class Constants {
    * The chart default margin value.
    */
   public static final double DEFAULT_MARGIN = 0.0;
+  
 }

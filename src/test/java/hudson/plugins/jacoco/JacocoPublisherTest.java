@@ -361,11 +361,11 @@ public class JacocoPublisherTest extends AbstractJacocoTestBase {
 	@Test
 	public void testCheckResult() throws Exception {
 		TaskListener listener = TaskListener.NULL;
-		JacocoBuildAction action = new JacocoBuildAction(null, new JacocoHealthReportThresholds(), listener, null, null);
+		JacocoBuildAction action = new JacocoBuildAction(null, new JacocoHealthReportThresholds(), listener, null, null, null);
 
 		ICoverageNode covReport = new ClassCoverageImpl("name", 1, false);
 
-		action.setCoverage(new ClassReport(), covReport);
+		action.setCoverage(new ClassReport(), covReport, false);
 
 		assertEquals(Result.SUCCESS, JacocoPublisher.checkResult(action));
 	}

@@ -6,8 +6,11 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 
@@ -26,6 +29,9 @@ import org.objectweb.asm.Type;
 import hudson.plugins.jacoco.ExecutionFileLoader;
 import hudson.plugins.jacoco.JacocoBuildAction;
 import hudson.plugins.jacoco.JacocoHealthReportThresholds;
+import hudson.plugins.jacoco.group.Group;
+import hudson.plugins.jacoco.group.PackagePrefix;
+import hudson.plugins.jacoco.group.utils.Constants;
 import hudson.plugins.jacoco.model.Coverage;
 import hudson.util.HttpResponses;
 
@@ -41,6 +47,13 @@ public final class CoverageReport extends AggregatedReport<CoverageReport/*dummy
 	private CoverageReport(JacocoBuildAction action) {
 		this.action = action;
 		setName("Jacoco");
+		
+		setGroupConfig(action);
+		
+	}
+	
+	private JacocoBuildAction getAction() {
+		return action;
 	}
 	
 //	private String instructionColor;
@@ -62,16 +75,57 @@ public final class CoverageReport extends AggregatedReport<CoverageReport/*dummy
 		try {
 
 			action.getLogger().println("[JaCoCo plugin] Loading packages..");
+			
+			Map<String, Map<String, PackageReport>> groupPackageReports = new HashMap<>();
 
 			if (executionFileLoader.getBundleCoverage() !=null ) {
-				setAllCovTypes(this, executionFileLoader.getBundleCoverage());
+				setAllCovTypes(this, executionFileLoader.getBundleCoverage(), false);
 				
 				ArrayList<IPackageCoverage> packageList = new ArrayList<>(executionFileLoader.getBundleCoverage().getPackages());
 				for (IPackageCoverage packageCov: packageList) {
+					boolean match = false;
+					
 					PackageReport packageReport = new PackageReport();
 					packageReport.setName(packageCov.getName());
-					packageReport.setParent(this);
-					this.setCoverage(packageReport, packageCov);
+					
+					if (this.getGroups() != null && this.getGroups().size() > 0 ) {
+						for (Group group : action.getGroups()) {
+							if (groupPackageReports.get(group.getName()) == null) {
+								groupPackageReports.put(group.getName(), new HashMap<String, PackageReport>());
+							}
+							if (!group.getName().equals(Constants.MISMATCHED_PACKAGES_GROUP_NAME) && group.getPrefixes() != null) {
+								for (PackagePrefix prefix : group.getPrefixes()) {
+									if (prefix.getValue() != null && !prefix.getValue().isEmpty() && packageCov.getName().replaceAll("/", ".").startsWith(prefix.getValue())) {
+										Map<String, PackageReport> packagePrefixReport = groupPackageReports.get(group.getName());
+										if (packagePrefixReport.get(prefix.getValue().replaceAll("\\.", "/")) == null) {
+											packageReport.setGroupName(group.getName());
+											this.setCoverage(packageReport, packageCov, false);
+											packageReport.setName(prefix.getValue());
+											packagePrefixReport.put(prefix.getValue().replaceAll("\\.", "/"), packageReport);
+										} else {
+											packageReport =  packagePrefixReport.get(prefix.getValue().replaceAll("\\.", "/"));
+											this.setCoverage(packageReport, packageCov, true);
+										}
+										match = true;
+										packageReport.setGroupName(group.getName());
+										break;
+									}
+								}
+							}
+						}
+					}
+					
+					if (this.getGroups() == null || this.getGroups().size() == 0) {
+						packageReport.setParent(this);
+						this.setCoverage(packageReport, packageCov, false);
+					} else {
+						//Add package in mismatched group
+						if (!match && action.showMismatchedPackages()) {
+							packageReport.setParent(this);
+							this.setCoverage(packageReport, packageCov, false);
+							packageReport.setGroupName(Constants.MISMATCHED_PACKAGES_GROUP_NAME);
+						}
+					}
 
 					ArrayList<IClassCoverage> classList = new ArrayList<>(packageCov.getClasses());
 					for (IClassCoverage classCov: classList) {
@@ -80,14 +134,14 @@ public final class CoverageReport extends AggregatedReport<CoverageReport/*dummy
 						classReport.setParent(packageReport);
                         classReport.setSrcFileInfo(classCov, executionFileLoader.getSrcDir() + "/" + packageCov.getName() + "/" + classCov.getSourceFileName());
 
-						packageReport.setCoverage(classReport, classCov);
+						packageReport.setCoverage(classReport, classCov, false);
 
 						ArrayList<IMethodCoverage> methodList = new ArrayList<>(classCov.getMethods());
 						for (IMethodCoverage methodCov: methodList) {
 							MethodReport methodReport = new MethodReport();
 							methodReport.setName(getMethodName(classCov, methodCov));
 							methodReport.setParent(classReport);
-							classReport.setCoverage(methodReport, methodCov);
+							classReport.setCoverage(methodReport, methodCov, false);
 							methodReport.setSrcFileInfo(methodCov);
 
 							classReport.add(methodReport);
@@ -96,7 +150,18 @@ public final class CoverageReport extends AggregatedReport<CoverageReport/*dummy
 						packageReport.add(classReport);
 					}
 
-					this.add(packageReport);
+					if (!match) {
+						this.add(packageReport);
+					} 
+				}
+				
+				if (this.getGroups() != null && this.getGroups().size() > 0) {
+					for (Map<String, PackageReport> mpr : groupPackageReports.values()) {
+						for (PackageReport pr : mpr.values()) {
+							pr.setParent(this);
+							this.add(pr);
+						}
+					}
 				}
 			}
 			action.getLogger().println("[JaCoCo plugin] Done.");
@@ -262,6 +327,15 @@ public final class CoverageReport extends AggregatedReport<CoverageReport/*dummy
 			branchColor = "#FF0000";
 		}
 		*/
+	}
+	
+	private void setGroupConfig(JacocoBuildAction action) {
+		if (action.getGroups().size() > 0) {
+			this.setGroups(action.getGroups());
+			if (action.showMismatchedPackages()) {
+				this.getGroups().add(new Group(Constants.MISMATCHED_PACKAGES_GROUP_NAME, new LinkedList<PackagePrefix>()));
+			}
+		}
 	}
 
 

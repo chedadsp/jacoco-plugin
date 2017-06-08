@@ -1,14 +1,17 @@
 package hudson.plugins.jacoco;
 
 
+import hudson.plugins.jacoco.group.Group;
+import hudson.plugins.jacoco.group.GroupPackagesConfig;
 import hudson.util.LogTaskListener;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+
 import java.io.File;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -20,8 +23,12 @@ public class JacocoBuildActionTest extends AbstractJacocoTestBase {
         JacocoBuildAction r = JacocoBuildAction.load(null,
                 new JacocoHealthReportThresholds(30, 90, 25, 80, 15, 60, 15, 60, 20, 70, 0, 0),
                 new LogTaskListener(logger, Level.INFO),
-                new JacocoReportDir(new File(".")), null, null);
+                new JacocoReportDir(new File(".")), null, null, new GroupPackagesConfig(true, new LinkedList<Group>()));
         assertNotNull(r);
+        
+        assertTrue(r.showMismatchedPackages());
+        assertNotNull(r.getGroups());
+        assertEquals(r.getGroups().size(), 0);
     }
 
 	/*@Test
@@ -76,4 +83,5 @@ public class JacocoBuildActionTest extends AbstractJacocoTestBase {
       		" (39%).",
                    r.getBuildHealth().getDescription());
   }*/
+    
 }

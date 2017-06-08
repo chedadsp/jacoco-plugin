@@ -2,7 +2,12 @@ package hudson.plugins.jacoco.report;
 
 import static org.junit.Assert.*;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.junit.Test;
+
+import hudson.plugins.jacoco.group.Group;
 
 
 public class AggregatedReportTest {
@@ -55,5 +60,15 @@ public class AggregatedReportTest {
         
         assertTrue(packageReport.hasChildrenClassCoverage());
         assertFalse(packageReport.hasChildrenLineCoverage());
+    }
+    
+    @Test
+    public void testSetAndGetGroups() {
+    	AggregatedReport<PackageReport,ClassReport,MethodReport> report = new AggregatedReport<PackageReport,ClassReport,MethodReport>() {
+        };
+        
+        report.setGroups(new LinkedList<Group>());
+        assertNotNull(report.getGroups());
+        assertEquals(report.getGroups().size(), 0);
     }
 }

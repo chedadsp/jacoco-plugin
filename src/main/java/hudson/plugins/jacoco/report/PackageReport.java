@@ -6,6 +6,9 @@ package hudson.plugins.jacoco.report;
  * @author David Carver
  */
 public final class PackageReport extends AggregatedReport<CoverageReport,PackageReport,ClassReport> {
+	
+	private String groupName;
+	
 
     /**
      * Give the default no-name package a non-empty name.
@@ -28,6 +31,14 @@ public final class PackageReport extends AggregatedReport<CoverageReport,Package
         this.getChildren().put(child.getName(), child);
         //logger.log(Level.INFO, "PackageReport");
     }
+
+	public String getGroupName() {
+		return groupName;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
     
     //private static final Logger logger = Logger.getLogger(CoverageObject.class.getName());
     

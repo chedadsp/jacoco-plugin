@@ -35,6 +35,12 @@ public class CoverageReportTest {
         CoverageReport report = new CoverageReport(action, new ExecutionFileLoader());
         report.setThresholds(new JacocoHealthReportThresholds());
     }
+    
+    @Test
+    public void testGetGroups() throws Exception {
+        CoverageReport report = new CoverageReport(action, new ExecutionFileLoader());
+        assertNull(report.getGroups());
+    }
 
-    private JacocoBuildAction action = new JacocoBuildAction(null, null, StreamTaskListener.fromStdout(), null, null);
+    private JacocoBuildAction action = new JacocoBuildAction(null, null, StreamTaskListener.fromStdout(), null, null, null);
 }

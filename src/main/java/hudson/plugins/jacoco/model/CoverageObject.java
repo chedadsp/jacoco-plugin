@@ -299,37 +299,61 @@ public abstract class CoverageObject<SELF extends CoverageObject<SELF>> {
 		    .append("</table>");
 	}
 	
-	protected <ReportLevel extends AggregatedReport<?,?,?> > void setAllCovTypes( ReportLevel reportToSet, ICoverageNode covReport) {
+	protected <ReportLevel extends AggregatedReport<?,?,?> > void setAllCovTypes( ReportLevel reportToSet, ICoverageNode covReport, boolean add) {
 		
 		Coverage tempCov = new Coverage();
-		tempCov.accumulate(covReport.getClassCounter().getMissedCount(), covReport.getClassCounter().getCoveredCount());
+		if (add) {
+			tempCov.accumulate(covReport.getClassCounter().getMissedCount() + reportToSet.clazz.getMissed(), covReport.getClassCounter().getCoveredCount() + reportToSet.clazz.getCovered());
+		} else {
+			tempCov.accumulate(covReport.getClassCounter().getMissedCount(), covReport.getClassCounter().getCoveredCount());
+		}
 		reportToSet.clazz = tempCov;
-		
+
 		tempCov = new Coverage();
-		tempCov.accumulate(covReport.getBranchCounter().getMissedCount(), covReport.getBranchCounter().getCoveredCount());
+		if (add) {
+			tempCov.accumulate(covReport.getBranchCounter().getMissedCount() + reportToSet.branch.getMissed(), covReport.getBranchCounter().getCoveredCount() + reportToSet.branch.getCovered());
+		} else {
+			tempCov.accumulate(covReport.getBranchCounter().getMissedCount(), covReport.getBranchCounter().getCoveredCount());
+		}
 		reportToSet.branch = tempCov;
-		
+
 		tempCov = new Coverage();
-		tempCov.accumulate(covReport.getLineCounter().getMissedCount(), covReport.getLineCounter().getCoveredCount());
+		if (add) {
+			tempCov.accumulate(covReport.getLineCounter().getMissedCount() + reportToSet.line.getMissed(), covReport.getLineCounter().getCoveredCount() + reportToSet.line.getCovered());
+		} else {
+			tempCov.accumulate(covReport.getLineCounter().getMissedCount(), covReport.getLineCounter().getCoveredCount());
+		}
 		reportToSet.line = tempCov;
-		
+
 		tempCov = new Coverage();
-		tempCov.accumulate(covReport.getInstructionCounter().getMissedCount(), covReport.getInstructionCounter().getCoveredCount());
+		if (add) {
+			tempCov.accumulate(covReport.getInstructionCounter().getMissedCount() + reportToSet.instruction.getMissed(), covReport.getInstructionCounter().getCoveredCount() + + reportToSet.instruction.getCovered());
+		} else {
+			tempCov.accumulate(covReport.getInstructionCounter().getMissedCount(), covReport.getInstructionCounter().getCoveredCount());
+		}
 		reportToSet.instruction = tempCov;
-		
+
 		tempCov = new Coverage();
-		tempCov.accumulate(covReport.getMethodCounter().getMissedCount(), covReport.getMethodCounter().getCoveredCount());
+		if (add) {
+			tempCov.accumulate(covReport.getMethodCounter().getMissedCount() + reportToSet.method.getMissed(), covReport.getMethodCounter().getCoveredCount() + reportToSet.method.getCovered());
+		} else {
+			tempCov.accumulate(covReport.getMethodCounter().getMissedCount(), covReport.getMethodCounter().getCoveredCount());
+		}
 		reportToSet.method = tempCov;
-		
+
 		tempCov = new Coverage();
-		tempCov.accumulate(covReport.getComplexityCounter().getMissedCount(), covReport.getComplexityCounter().getCoveredCount());
+		if (add) {
+			tempCov.accumulate(covReport.getComplexityCounter().getMissedCount() + reportToSet.complexity.getMissed(), covReport.getComplexityCounter().getCoveredCount()  + reportToSet.complexity.getCovered());
+		} else {
+			tempCov.accumulate(covReport.getComplexityCounter().getMissedCount(), covReport.getComplexityCounter().getCoveredCount());
+		}
 		reportToSet.complexity = tempCov;
 		
 	}
 	
-	public  < ReportLevel extends AggregatedReport<?,?,?> > void setCoverage( ReportLevel reportToSet, ICoverageNode covReport) {
+	public  < ReportLevel extends AggregatedReport<?,?,?> > void setCoverage( ReportLevel reportToSet, ICoverageNode covReport, boolean add) {
 		
-		setAllCovTypes(reportToSet, covReport);
+		setAllCovTypes(reportToSet, covReport, add);
 		
 		if (this.maxClazz < reportToSet.clazz.getTotal()) {
 			this.maxClazz = reportToSet.clazz.getTotal();

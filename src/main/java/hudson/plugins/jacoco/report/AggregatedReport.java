@@ -3,8 +3,14 @@ package hudson.plugins.jacoco.report;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
+import hudson.plugins.jacoco.group.Group;
+
 import java.io.IOException;
+
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -17,6 +23,8 @@ public abstract class AggregatedReport<PARENT extends AggregatedReport<?,PARENT,
     CHILD extends AbstractReport<SELF,CHILD>> extends AbstractReport<PARENT,SELF> {
 
     private final Map<String, CHILD> children = new TreeMap<>();
+    
+    private Set<Group> groups; 
 
     public void add(CHILD child) {
         children.put(child.getName(),child);
@@ -68,4 +76,15 @@ public abstract class AggregatedReport<PARENT extends AggregatedReport<?,PARENT,
         return false;
     }
 
+	public Set<Group> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<Group> groups) {
+		this.groups = new LinkedHashSet<Group>();
+		for (Group g : groups) {
+			this.groups.add(g);
+		}
+	}
+	
 }

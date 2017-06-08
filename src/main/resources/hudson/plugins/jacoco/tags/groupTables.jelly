@@ -1,0 +1,19 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:e="/hudson/plugins/jacoco/tags">
+  <j:forEach var="g" items="${it.getGroups()}">
+     <h3>Coverage for <st:out value="${g.name}"/></h3>
+     <table border="1px" class="sortable pane">
+        <e:captionLine />
+    		<j:forEach var="c" items="${it.children.values()}">
+    	       <tr>
+    		      <j:if test="${g.getName() == c.getGroupName()}">
+    		      	 <td class="nowrap ${h.ifThenElse(c.failed,' red','')}" >
+			            <a href="${h.ifThenElse(nolink!=null,null,c.name+'/')}"><st:out value="${c.name}"/></a>
+			         </td>
+    			     <j:out value="${c.printFourCoverageColumns()}"/>
+    		      </j:if>
+    		   </tr>
+    		</j:forEach>
+     </table>
+   </j:forEach>
+</j:jelly>
