@@ -4,6 +4,7 @@ import hudson.Util;
 import hudson.model.Api;
 import hudson.model.Run;
 import hudson.plugins.jacoco.Rule;
+import hudson.plugins.jacoco.ShowMetrics;
 import hudson.plugins.jacoco.model.CoverageGraphLayout.Axis;
 import hudson.plugins.jacoco.model.CoverageGraphLayout.CoverageType;
 import hudson.plugins.jacoco.model.CoverageGraphLayout.CoverageValue;
@@ -255,7 +256,7 @@ public abstract class CoverageObject<SELF extends CoverageObject<SELF>> {
 	static NumberFormat intFormat = new DecimalFormat("0", new DecimalFormatSymbols(Locale.US));
 
 	protected void printRatioCell(boolean failed, Coverage ratio, StringBuilder buf) {
-		if (ratio != null && ratio.isInitialized()) {
+		if (ratio != null && ratio.isInitialized() && ratio.isShow()) {
 			//String className = "nowrap" + (failed ? " red" : "");
 			buf.append("<td class='").append("").append("'");
 			buf.append(" data='").append(dataFormat.format(ratio.getPercentageFloat()));
@@ -299,7 +300,7 @@ public abstract class CoverageObject<SELF extends CoverageObject<SELF>> {
 		    .append("</table>");
 	}
 	
-	protected <ReportLevel extends AggregatedReport<?,?,?> > void setAllCovTypes( ReportLevel reportToSet, ICoverageNode covReport, boolean add) {
+	protected <ReportLevel extends AggregatedReport<?,?,?> > void setAllCovTypes( ReportLevel reportToSet, ICoverageNode covReport, ShowMetrics showMetrics, boolean add) {
 		
 		Coverage tempCov = new Coverage();
 		if (add) {
@@ -307,6 +308,7 @@ public abstract class CoverageObject<SELF extends CoverageObject<SELF>> {
 		} else {
 			tempCov.accumulate(covReport.getClassCounter().getMissedCount(), covReport.getClassCounter().getCoveredCount());
 		}
+		tempCov.setShow(showMetrics.isShowClass());
 		reportToSet.clazz = tempCov;
 
 		tempCov = new Coverage();
@@ -315,6 +317,7 @@ public abstract class CoverageObject<SELF extends CoverageObject<SELF>> {
 		} else {
 			tempCov.accumulate(covReport.getBranchCounter().getMissedCount(), covReport.getBranchCounter().getCoveredCount());
 		}
+		tempCov.setShow(showMetrics.isShowBranch());
 		reportToSet.branch = tempCov;
 
 		tempCov = new Coverage();
@@ -323,6 +326,7 @@ public abstract class CoverageObject<SELF extends CoverageObject<SELF>> {
 		} else {
 			tempCov.accumulate(covReport.getLineCounter().getMissedCount(), covReport.getLineCounter().getCoveredCount());
 		}
+		tempCov.setShow(showMetrics.isShowLine());
 		reportToSet.line = tempCov;
 
 		tempCov = new Coverage();
@@ -331,6 +335,7 @@ public abstract class CoverageObject<SELF extends CoverageObject<SELF>> {
 		} else {
 			tempCov.accumulate(covReport.getInstructionCounter().getMissedCount(), covReport.getInstructionCounter().getCoveredCount());
 		}
+		tempCov.setShow(showMetrics.isShowInstruction());
 		reportToSet.instruction = tempCov;
 
 		tempCov = new Coverage();
@@ -339,6 +344,7 @@ public abstract class CoverageObject<SELF extends CoverageObject<SELF>> {
 		} else {
 			tempCov.accumulate(covReport.getMethodCounter().getMissedCount(), covReport.getMethodCounter().getCoveredCount());
 		}
+		tempCov.setShow(showMetrics.isShowMethod());
 		reportToSet.method = tempCov;
 
 		tempCov = new Coverage();
@@ -347,13 +353,14 @@ public abstract class CoverageObject<SELF extends CoverageObject<SELF>> {
 		} else {
 			tempCov.accumulate(covReport.getComplexityCounter().getMissedCount(), covReport.getComplexityCounter().getCoveredCount());
 		}
+		tempCov.setShow(showMetrics.isShowComplexity());
 		reportToSet.complexity = tempCov;
 		
 	}
 	
-	public  < ReportLevel extends AggregatedReport<?,?,?> > void setCoverage( ReportLevel reportToSet, ICoverageNode covReport, boolean add) {
+	public  < ReportLevel extends AggregatedReport<?,?,?> > void setCoverage( ReportLevel reportToSet, ICoverageNode covReport, ShowMetrics showMetrics, boolean add) {
 		
-		setAllCovTypes(reportToSet, covReport, add);
+		setAllCovTypes(reportToSet, covReport, showMetrics, add);
 		
 		if (this.maxClazz < reportToSet.clazz.getTotal()) {
 			this.maxClazz = reportToSet.clazz.getTotal();

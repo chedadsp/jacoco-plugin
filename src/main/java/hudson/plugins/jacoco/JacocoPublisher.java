@@ -105,6 +105,13 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
     private String deltaMethodCoverage;
     private String deltaClassCoverage;
     private boolean buildOverBuild;
+    
+    private boolean showInstruction;
+    private boolean showBranch;
+    private boolean showComplexity;
+    private boolean showLine;
+    private boolean showMethod;
+    private boolean showClass;
     private GroupPackagesConfig groupPackagesConfig;
     
 	private static final String DIR_SEP = "\\s*,\\s*";
@@ -140,6 +147,12 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
         this.deltaMethodCoverage = "0";
         this.deltaClassCoverage = "0";
         this.buildOverBuild = false;
+        this.showInstruction = true;
+        this.showBranch = true;
+        this.showComplexity = true;
+        this.showLine = true;
+        this.showMethod = true;
+        this.showClass= true;
     }
 
 	/**
@@ -148,8 +161,8 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
     @Deprecated
     public JacocoPublisher(GroupPackagesConfig groupPackagesConfig, String execPattern, String classPattern, String sourcePattern, String inclusionPattern, String exclusionPattern, boolean skipCopyOfSrcFiles, String maximumInstructionCoverage, String maximumBranchCoverage
     		, String maximumComplexityCoverage, String maximumLineCoverage, String maximumMethodCoverage, String maximumClassCoverage, String minimumInstructionCoverage, String minimumBranchCoverage
-    		, String minimumComplexityCoverage, String minimumLineCoverage, String minimumMethodCoverage, String minimumClassCoverage, boolean changeBuildStatus,
-                           String deltaInstructionCoverage, String deltaBranchCoverage, String deltaComplexityCoverage, String deltaLineCoverage, String deltaMethodCoverage, String deltaClassCoverage, boolean buildOverBuild) {
+    		, String minimumComplexityCoverage, String minimumLineCoverage, String minimumMethodCoverage, String minimumClassCoverage, boolean changeBuildStatus, String deltaInstructionCoverage, String deltaBranchCoverage, String deltaComplexityCoverage, String deltaLineCoverage, String deltaMethodCoverage, String deltaClassCoverage
+    		, boolean buildOverBuild, boolean showInstruction, boolean showBranch, boolean showComplexity, boolean showLine, boolean showMethod, boolean showClass) {
     	this.groupPackagesConfig = groupPackagesConfig;
     	this.execPattern = execPattern;
     	this.classPattern = classPattern;
@@ -177,6 +190,12 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
         this.deltaMethodCoverage = deltaMethodCoverage;
         this.deltaClassCoverage = deltaClassCoverage;
         this.buildOverBuild = buildOverBuild;
+        this.showInstruction = showInstruction;
+        this.showBranch = showBranch;
+        this.showComplexity = showComplexity;
+        this.showLine = showLine;
+        this.showMethod = showMethod;
+        this.showClass= showClass;
     }
     
     private Integer convertThresholdInputToInteger(String input, EnvVars env) {
@@ -354,6 +373,30 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
         return buildOverBuild;
     }
     
+    public boolean isShowInstruction() {
+		return showInstruction;
+	}
+
+	public boolean isShowBranch() {
+		return showBranch;
+	}
+
+	public boolean isShowComplexity() {
+		return showComplexity;
+	}
+
+	public boolean isShowLine() {
+		return showLine;
+	}
+
+	public boolean isShowMethod() {
+		return showMethod;
+	}
+
+	public boolean isShowClass() {
+		return showClass;
+	}
+    
     public List<Group> getGroups() {
 		return groupPackagesConfig.getGroups();
 	}
@@ -491,6 +534,36 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
     @DataBoundSetter
     public void setBuildOverBuild(boolean buildOverBuild) {
         this.buildOverBuild = buildOverBuild;
+    }
+    
+    @DataBoundSetter
+    public void setShowInstruction(boolean showInstruction) {
+    	this.showInstruction = showInstruction;
+    }
+    
+    @DataBoundSetter
+    public void setShowBranch(boolean showBranch) {
+    	this.showBranch = showBranch;
+    }
+    
+    @DataBoundSetter
+    public void setShowComplexity(boolean showComplexity) {
+    	this.showComplexity = showComplexity;
+    }
+    
+    @DataBoundSetter
+    public void setShowLine(boolean showLine) {
+    	this.showLine = showLine;
+    }
+    
+    @DataBoundSetter
+    public void setShowMethod(boolean showMethod) {
+    	this.showMethod = showMethod;
+    }
+    
+    @DataBoundSetter
+    public void setShowClass(boolean showClass) {
+    	this.showClass= showClass;
     }
     
     @DataBoundSetter
@@ -632,6 +705,7 @@ public class JacocoPublisher extends Recorder implements SimpleBuildStep {
         run.addAction(action);
 
         logger.println("[JaCoCo plugin] Publishing the results..");
+        action.setShowMetrics(new ShowMetrics(showInstruction, showBranch, showComplexity, showLine, showMethod, showClass));
         final CoverageReport result = action.getResult();
 
         if (result == null) {

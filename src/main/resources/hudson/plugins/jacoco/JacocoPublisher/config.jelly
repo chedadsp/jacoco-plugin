@@ -182,37 +182,76 @@
     </table>
   </f:entry>
   
+  <f:entry>
+	  <table width="78%">
+		  <thead>
+		  <tr>
+		  <th colspan="6" style="text-align: left">Choose metrics</th>
+		  </tr>
+		  <tr>
+		    <col width="13%"/>
+		    <col width="13%"/>
+		    <col width="13%"/>
+		    <col width="13%"/>
+		    <col width="13%"/>
+		    <col width="13%"/>
+		    </tr>
+		  </thead>
+		  <tbody>
+			  <tr>
+			  	<td>
+			        <f:checkbox field="showInstruction" default="true" checked="${instance.showInstruction}" title="instruction"/>
+				</td>
+				<td>
+		        	<f:checkbox field="showBranch" default="true" checked="${instance.showBranch}" title="branch"/>
+				</td>
+				<td>
+			        <f:checkbox field="showComplexity" default="true" checked="${instance.showComplexity}" title="complexity"/>
+				</td>
+				<td>
+			        <f:checkbox field="showLine" default="true" checked="${instance.showLine}" title="line"/>
+				</td>
+				<td>
+			        <f:checkbox field="showMethod" default="true" checked="${instance.showMethod}" title="method"/>
+				</td>
+				<td>
+		       		<f:checkbox field="showClass" default="true" checked="${instance.showClass}" title="class"/>
+				</td>
+		  	</tr>
+	  	</tbody>
+	</table>
+  </f:entry>
   
-	<f:optionalBlock field="groupPackagesConfig" title="Group packages" checked="${instance.groupPackagesConfig.groups!=null}">
-		<f:entry field="showMismatched">
-			<f:checkbox checked="${instance.groupPackagesConfig.showMismatched}" title="Show mismatched"/>
-		</f:entry>
-		<f:entry field="groups" title="Groups">
-			<f:repeatable field="groups" add="Add Group">
-		        <table width="100%">
-					<br/>
-					<f:entry field="name" title="Group name">
-						<f:textbox/>
-					</f:entry>
-					<f:entry field="prefixes">
-			          	<f:repeatable field="prefixes" add="Add Prefix">
-			          		<table width="100%">
-								<br/>
-								<f:entry title="Package prefix" field="value">
-									<f:textbox/>
-								</f:entry>
-			        		</table>
-			        		<div align="right">
-					          <input type="button" value="Delete Prefix" class="repeatable-delete" style="margin-left: 1em;" />
-					        </div>
-			          	</f:repeatable>
-					</f:entry>
-		        </table>
-		        <div align="right">
-		          <input type="button" value="Delete Group" class="repeatable-delete" style="margin-left: 1em;" />
-		        </div>
-			</f:repeatable>
-		</f:entry>
-	</f:optionalBlock>
+  <f:optionalBlock field="groupPackagesConfig" title="Group packages" checked="${instance.groupPackagesConfig.groups!=null}">
+	<f:entry field="showMismatched">
+		<f:checkbox checked="${instance.groupPackagesConfig.showMismatched}" title="Show mismatched"/>
+	</f:entry>
+	<f:entry field="groups" title="Groups">
+		<f:repeatable field="groups" add="Add Group">
+	        <table width="100%">
+				<br/>
+				<f:entry field="name" title="Group name">
+					<f:textbox/>
+				</f:entry>
+				<f:entry field="prefixes">
+		          	<f:repeatable field="prefixes" add="Add Prefix">
+		          		<table width="100%">
+							<br/>
+							<f:entry title="Package prefix" field="value">
+								<f:textbox/>
+							</f:entry>
+		        		</table>
+		        		<div align="right">
+				          <input type="button" value="Delete Prefix" class="repeatable-delete" style="margin-left: 1em;" />
+				        </div>
+		          	</f:repeatable>
+				</f:entry>
+	        </table>
+	        <div align="right">
+	          <input type="button" value="Delete Group" class="repeatable-delete" style="margin-left: 1em;" />
+	        </div>
+		</f:repeatable>
+	</f:entry>
+  </f:optionalBlock>
 	
 </j:jelly>

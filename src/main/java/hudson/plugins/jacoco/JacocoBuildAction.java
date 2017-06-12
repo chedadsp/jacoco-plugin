@@ -55,6 +55,8 @@ public final class JacocoBuildAction extends CoverageObject<JacocoBuildAction> i
 	private transient WeakReference<CoverageReport> report;
 	private final String[] inclusions;
 	private final String[] exclusions;
+	
+	private ShowMetrics showMetrics;
  
 	/**
 	 * The thresholds that applied when this build was built.
@@ -389,6 +391,14 @@ public final class JacocoBuildAction extends CoverageObject<JacocoBuildAction> i
 	@Override
 	public Collection<? extends Action> getProjectActions() {
 		return jacocoProjectActions;
+	}
+	
+	public void setShowMetrics(ShowMetrics showMetrics) {
+		this.showMetrics = showMetrics;
+	}
+	
+	public ShowMetrics getShowMetrics() {
+		return showMetrics;
 	}
 	
 	public List<Group> getGroups() {

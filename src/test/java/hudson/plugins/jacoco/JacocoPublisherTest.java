@@ -85,7 +85,7 @@ public class JacocoPublisherTest extends AbstractJacocoTestBase {
 				null, null, null, null,
 				null, null, null, null,
 				null, null, null, null,
-				false, null, null, null, null, null, null, false);
+				false, null, null, null, null, null, null, false, true, true, true, true, true, true);
 		assertNotNull(publisher.toString());
 	}
 
@@ -146,6 +146,24 @@ public class JacocoPublisherTest extends AbstractJacocoTestBase {
 
 		publisher.setMinimumMethodCoverage("minM");
 		assertEquals("minM", publisher.getMinimumMethodCoverage());
+		
+		publisher.setShowBranch(true);
+		assertTrue(publisher.isShowBranch());
+		
+		publisher.setShowClass(true);
+		assertTrue(publisher.isShowClass());
+		
+		publisher.setShowComplexity(true);
+		assertTrue(publisher.isShowComplexity());
+		
+		publisher.setShowInstruction(true);
+		assertTrue(publisher.isShowInstruction());
+		
+		publisher.setShowLine(true);
+		assertTrue(publisher.isShowLine());
+		
+		publisher.setShowMethod(true);
+		assertTrue(publisher.isShowMethod());
 
 		assertNotNull(publisher.toString());
 
@@ -365,7 +383,7 @@ public class JacocoPublisherTest extends AbstractJacocoTestBase {
 
 		ICoverageNode covReport = new ClassCoverageImpl("name", 1, false);
 
-		action.setCoverage(new ClassReport(), covReport, false);
+		action.setCoverage(new ClassReport(), covReport, new ShowMetrics(true, true, true, true, true, true), false);
 
 		assertEquals(Result.SUCCESS, JacocoPublisher.checkResult(action));
 	}
@@ -499,7 +517,7 @@ public class JacocoPublisherTest extends AbstractJacocoTestBase {
 		JacocoPublisher publisher = new JacocoPublisher(new GroupPackagesConfig(true, null), "**/**.exec", "**/classes", "**/src/main/java", "", "", false, "0", "0"
 				, "0", "0", "0", "0", "0", "0"
 				, "0", "0", "0", "0", false,
-				"10.564", "5.65", "9.995", "11.4529", "9.346", "5.237", true);
+				"10.564", "5.65", "9.995", "11.4529", "9.346", "5.237", true, false, false, false, false, false, false);
 		publisher.perform(run, filePath, launcher, taskListener);
 
 		assertNotNull(buildAction.get());

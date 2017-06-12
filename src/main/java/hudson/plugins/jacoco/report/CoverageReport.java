@@ -79,7 +79,7 @@ public final class CoverageReport extends AggregatedReport<CoverageReport/*dummy
 			Map<String, Map<String, PackageReport>> groupPackageReports = new HashMap<>();
 
 			if (executionFileLoader.getBundleCoverage() !=null ) {
-				setAllCovTypes(this, executionFileLoader.getBundleCoverage(), false);
+				setAllCovTypes(this, executionFileLoader.getBundleCoverage(), action.getShowMetrics(), false);
 				
 				ArrayList<IPackageCoverage> packageList = new ArrayList<>(executionFileLoader.getBundleCoverage().getPackages());
 				for (IPackageCoverage packageCov: packageList) {
@@ -99,12 +99,12 @@ public final class CoverageReport extends AggregatedReport<CoverageReport/*dummy
 										Map<String, PackageReport> packagePrefixReport = groupPackageReports.get(group.getName());
 										if (packagePrefixReport.get(prefix.getValue().replaceAll("\\.", "/")) == null) {
 											packageReport.setGroupName(group.getName());
-											this.setCoverage(packageReport, packageCov, false);
 											packageReport.setName(prefix.getValue());
+											this.setCoverage(packageReport, packageCov, action.getShowMetrics(), false);
 											packagePrefixReport.put(prefix.getValue().replaceAll("\\.", "/"), packageReport);
 										} else {
 											packageReport =  packagePrefixReport.get(prefix.getValue().replaceAll("\\.", "/"));
-											this.setCoverage(packageReport, packageCov, true);
+											this.setCoverage(packageReport, packageCov, action.getShowMetrics(), true);
 										}
 										match = true;
 										packageReport.setGroupName(group.getName());
@@ -117,12 +117,11 @@ public final class CoverageReport extends AggregatedReport<CoverageReport/*dummy
 					
 					if (this.getGroups() == null || this.getGroups().size() == 0) {
 						packageReport.setParent(this);
-						this.setCoverage(packageReport, packageCov, false);
+						this.setCoverage(packageReport, packageCov, action.getShowMetrics(), false);
 					} else {
-						//Add package in mismatched group
 						if (!match && action.showMismatchedPackages()) {
 							packageReport.setParent(this);
-							this.setCoverage(packageReport, packageCov, false);
+							this.setCoverage(packageReport, packageCov, action.getShowMetrics(), false);
 							packageReport.setGroupName(Constants.MISMATCHED_PACKAGES_GROUP_NAME);
 						}
 					}
@@ -134,14 +133,14 @@ public final class CoverageReport extends AggregatedReport<CoverageReport/*dummy
 						classReport.setParent(packageReport);
                         classReport.setSrcFileInfo(classCov, executionFileLoader.getSrcDir() + "/" + packageCov.getName() + "/" + classCov.getSourceFileName());
 
-						packageReport.setCoverage(classReport, classCov, false);
+						packageReport.setCoverage(classReport, classCov, action.getShowMetrics(), false);
 
 						ArrayList<IMethodCoverage> methodList = new ArrayList<>(classCov.getMethods());
 						for (IMethodCoverage methodCov: methodList) {
 							MethodReport methodReport = new MethodReport();
 							methodReport.setName(getMethodName(classCov, methodCov));
 							methodReport.setParent(classReport);
-							classReport.setCoverage(methodReport, methodCov, false);
+							classReport.setCoverage(methodReport, methodCov, action.getShowMetrics(), false);
 							methodReport.setSrcFileInfo(methodCov);
 
 							classReport.add(methodReport);
@@ -243,7 +242,7 @@ public final class CoverageReport extends AggregatedReport<CoverageReport/*dummy
 	
 	@Override
 	protected void printRatioCell(boolean failed, Coverage ratio, StringBuilder buf) {
-		if (ratio != null && ratio.isInitialized()) {
+		if (ratio != null && ratio.isInitialized() && ratio.isShow()) {
 			String bgColor = "#FFFFFF";
 			
 			if (JacocoHealthReportThresholds.RESULT.BETWEENMINMAX == healthReports.getResultByTypeAndRatio(ratio)) {

@@ -18,6 +18,7 @@ final public class Coverage implements Serializable {
     private int covered = 0;
     private CoverageElement.Type type;
     boolean initialized = false;
+    private boolean show = true;
 
     public Coverage(int missed, int covered) {
         this.missed = missed;
@@ -75,6 +76,14 @@ final public class Coverage implements Serializable {
 
     public void setType(CoverageElement.Type type) {
         this.type = type;
+    }
+    
+    public boolean isShow() {
+    	return show;
+    }
+    
+    public void setShow(boolean show) {
+    	this.show = show;
     }
 
     @Override
