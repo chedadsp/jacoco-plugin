@@ -8,6 +8,6 @@ public class Constants {
 	/**
 	 * Mismatched packages group name.
 	 */
-	public static final String MISMATCHED_PACKAGES_GROUP_NAME = "Mis...";
+	public static final String MISMATCHED_PACKAGES_GROUP_NAME = "Rest";
 
 }
